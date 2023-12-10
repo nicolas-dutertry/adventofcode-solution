@@ -2,6 +2,8 @@ package com.dutertry.adventofcode.year2023;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -36,11 +38,12 @@ public class Day10_2 {
     
     public static void main(String[] args) {
         List<String> map = new LinkedList<>();
-        List<Point> loop = new LinkedList<>();
+        Collection<Point> loop = new HashSet<>();
         try (BufferedReader br = AdventUtils.getBufferedReader(10)) {
             String line;
             int sx = 0;
             int sy = 0;
+            char sc = 'S';
             int i = 0;
             while ((line = br.readLine()) != null) {
                 map.add(line);
@@ -65,28 +68,49 @@ public class Day10_2 {
             int westy = sy;
             char westChar = map.get(westy).charAt(westx);
             
-            char currentChar;
-            int x;
-            int y;
+            char currentChar = 'S';
+            int x = 0;
+            int y = 0;
+            
+            boolean north=false, south=false, east=false, west=false;
             
             if(northChar == 'F' || northChar == '|' || northChar == '7') {
                 currentChar = northChar;
                 x = northx;
                 y = northy;
-            } else if(southChar == 'J' || southChar == '|' || southChar == 'L') {
+                north = true;
+            }
+            if(southChar == 'J' || southChar == '|' || southChar == 'L') {
                 currentChar = southChar;
                 x = southx;
                 y = southy;
-            } else if(eastChar == 'J' || eastChar == '-' || eastChar == '7') {
+                south = true;
+            }
+            if(eastChar == 'J' || eastChar == '-' || eastChar == '7') {
                 currentChar = eastChar;
                 x = eastx;
                 y = easty;
-            } else if(westChar == 'L' || eastChar == '-' || eastChar == 'F') {
+                east = true;
+            }
+            if(westChar == 'L' || eastChar == '-' || eastChar == 'F') {
                 currentChar = westChar;
                 x = westx;
                 y = westy;
-            } else {
-                throw new RuntimeException("Oups");
+                west = true;
+            }
+            
+            if(north && south) {
+                sc = '|';
+            } else if(north && east) {
+                sc = 'L';
+            } else if(north && west) {
+                sc = 'J';
+            } else if(east && west) {
+                sc = '-';
+            } else if(south && east) {
+                sc = 'F';
+            } else if(south && west) {
+                sc = '7';
             }
             
             char prevChar = 'S';
@@ -186,7 +210,7 @@ public class Day10_2 {
             for(int Y = 0; Y < map.size(); Y++) {
                 String mapLine = map.get(Y);
                 for(int X = 0; X < mapLine.length(); X++) {
-                    if(isInLoop(X, Y, loop, map)) {
+                    if(isInLoop(X, Y, loop, map, sc)) {
                         inLoop++;
                     }
                 }
@@ -198,7 +222,7 @@ public class Day10_2 {
         }
     }
     
-    private static boolean isInLoop(int x, int y, List<Point> loop, List<String> map) {
+    private static boolean isInLoop(int x, int y, Collection<Point> loop, List<String> map, char sc) {
         if(loop.contains(new Point(x, y))) {
             return false;
         }
@@ -207,6 +231,9 @@ public class Day10_2 {
         for(int i = y-1; i >=0; i--) {
             if(loop.contains(new Point(x, i))) {
                 char c = map.get(i).charAt(x);
+                if(c == 'S') {
+                    c = sc;
+                }
                 if(c != '|' && c != 'F' && c != 'L') {
                     intersections++;
                 }
