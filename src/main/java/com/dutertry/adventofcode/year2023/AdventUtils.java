@@ -23,15 +23,19 @@ public class AdventUtils {
         return new BufferedReader(new InputStreamReader(AdventUtils.class.getResourceAsStream(name), StandardCharsets.UTF_8));
     }
     
-    public static List<String> getLines(int day) throws IOException {
+    public static List<String> getLines(int day, boolean sample) throws IOException {
         List<String> lines = new ArrayList<>();
-        try(BufferedReader br = getBufferedReader(day)) {
+        try(BufferedReader br = getBufferedReader(day, sample)) {
             String line;
             while((line = br.readLine()) != null) {
                 lines.add(line);
             }
         }
         return lines;
+    }
+    
+    public static List<String> getLines(int day) throws IOException {
+        return getLines(day, false);
     }
     
     public static List<StringBuilder> getStringBuilderLines(int day) throws IOException {
@@ -47,6 +51,14 @@ public class AdventUtils {
             }
         }
         return lines;
+    }
+    
+    public static String getString(int day, boolean sample) throws IOException {
+        return getLines(day, sample).get(0);
+    }
+    
+    public static String getString(int day) throws IOException {
+        return getString(day, false);
     }
 
 }
