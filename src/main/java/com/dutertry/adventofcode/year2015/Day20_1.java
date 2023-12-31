@@ -1,89 +1,25 @@
 package com.dutertry.adventofcode.year2015;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 public class Day20_1 {
 private static final int PRESENT_COUNT = 29_000_000;
     
     public static void main(String[] args) {
-        List<Integer> primeNumbers = generatePrimeNumbers(2_000_000);
+        int maxhouse = PRESENT_COUNT/10 + 2;
+        int[] presents = new int[maxhouse];
         
-        int house = 2;
-        while(true) {
-            Set<Integer> divisors = getDivisors(house, primeNumbers);
-            int housePresentCount = 10;
-            for (int divisor : divisors) {
-                housePresentCount += 10 * divisor;
+        for(int elf = 1; elf < maxhouse; elf++) {
+            int elfpresents = elf*10;
+            int step = 1;
+            int house = elf*step;
+            while(house <= maxhouse - 1) {
+                presents[house] += elfpresents;
+                step++;
+                house = elf*step;
             }
-            
-            if(housePresentCount >= PRESENT_COUNT ) {
-                System.out.println(house);
-                break;
-            }
-            house++;
-        }
-    }
-    
-    private static List<Integer> generatePrimeNumbers(int limit) {
-        boolean[] isPrime = new boolean[limit + 1];
-        for (int i = 2; i <= limit; i++) {
-            isPrime[i] = true;
-        }
-
-        for (int i = 2; i * i <= limit; i++) {
-            if (isPrime[i]) {
-                for (int j = i * i; j <= limit; j += i) {
-                    isPrime[j] = false;
-                }
-            }
-        }
-
-        List<Integer> primeNumbers = new ArrayList<>(limit);
-        for (int i = 2; i <= limit; i++) {
-            if(isPrime[i]) {
-                primeNumbers.add(i);
-            }
-        }
-        return primeNumbers;
-    }
-    
-    private static List<Integer> getPrimeDecomposition(int number, List<Integer> primeNumbers) {
-        List<Integer> decomposition = new LinkedList<>();
-        int temp = number;
-        for(int i = 0; i <= primeNumbers.size(); i++) {
-            int prime = primeNumbers.get(i);
-            while(temp % prime == 0) {
-                decomposition.add(prime);
-                temp = temp / prime;  
-            }
-            if(temp == 1) {
+            if(presents[elf] >= PRESENT_COUNT) {
+                System.out.println(elf);
                 break;
             }
         }
-        return decomposition;
-    }
-    
-    private static Set<Integer> getDivisors(int number, List<Integer> primeNumbers) {
-        List<Integer> primeDecomposition = getPrimeDecomposition(number, primeNumbers);
-        return getDivisors(primeDecomposition);
-    }
-    
-    private static Set<Integer> getDivisors(List<Integer> primeDecomposition) {
-        if(primeDecomposition.size() == 1) {
-            Set<Integer> divisors = new HashSet<>(primeDecomposition);
-            return divisors;
-        }
-        int first = primeDecomposition.get(0);
-        Set<Integer> subDivisors = getDivisors(primeDecomposition.subList(1, primeDecomposition.size()));
-        Set<Integer> divisors = new HashSet<>(subDivisors);
-        divisors.add(first);
-        for (int divisor : subDivisors) {
-            divisors.add(divisor*first);
-        }
-        return divisors;
     }    
 }
