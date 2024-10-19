@@ -1,13 +1,12 @@
 package com.dutertry.adventofcode.year2022;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Day17_2 {
-
+    private static record State(int rockIndex, int jet, Set<Point> blockingPoints) {}
+    private static record StateInfo(long rockCount, int maxHeight) {}
     public static void main(String[] args) {
         try {
             long totalRocks = 1000000000000L;
@@ -25,21 +24,20 @@ public class Day17_2 {
             int jetpatternLength = jetpattern.length();
             int jetIndex = 0;
             Set<Point> restPoints = new HashSet<>();
-            int maxHeight = 0;
-            int[] serie = new int[1000];
-            int[] currentserie = new int[1000];
-            for(int i = 0; i < max; i++) {
-                Set<Point> rock = getRock(i, restPoints);
+            Map<State, StateInfo> stateMap = new HashMap<>();
+            for(long i = 0; i < totalRocks; i++) {
+                int rockIndex = (int)(i % 5);
+                Set<Point> rock = getRock(rockIndex, restPoints);
                 while(true) {
-                    char jet = jetpattern.charAt(jetIndex % jetpatternLength);
+                    char jetChar = jetpattern.charAt(jetIndex % jetpatternLength);
                     jetIndex++;
                     Set<Point> nextRock;
-                    if(jet == '<') {
+                    if(jetChar == '<') {
                         nextRock = moveLeft(rock);
-                    } else if(jet == '>') {
+                    } else if(jetChar == '>') {
                         nextRock = moveRight(rock);
                     } else {
-                        throw new RuntimeException("Invalid jet: " + jet);
+                        throw new RuntimeException("Invalid jet: " + jetChar);
                     }
                     if(isValid(nextRock, restPoints)) {
                         rock = nextRock;
@@ -53,21 +51,22 @@ public class Day17_2 {
                         break;
                     }
                 }
-                int newMaxHeight = restPoints.stream().mapToInt(p -> p.y()).max().orElse(0);
-                if(i >= 1000 && i < 2000) {
-                    serie[i - 1000] = newMaxHeight-maxHeight;
-                }
-                if(i >= 2000) {
-                    for(int j = 0; j < currentserie.length-1; j++) {
-                        currentserie[j] = currentserie[j+1];
-                    }
-                    currentserie[currentserie.length-1] = newMaxHeight-maxHeight;
+                int maxHeight = restPoints.stream().mapToInt(p -> p.y()).max().orElse(0);
+                State state = getState(rockIndex, jetIndex % jetpatternLength, restPoints);
+                if(stateMap.keySet().contains(state)) {
+                    StateInfo stateInfo = stateMap.get(state);
+                    System.out.println("Duplicate state at " + i);
+                    System.out.println("MaxHeight " + maxHeight);
+                    System.out.println("State: " + state);
+                    System.out.println("StateInfo: " + stateInfo);
 
-                    if(Arrays.equals(serie, currentserie)) {
-                        System.out.println("Found serie at i=" + i + " with height=" + newMaxHeight);
-                    }
+                    long rockPeriod = i - stateInfo.rockCount();
+                    int heightDif = maxHeight - stateInfo.maxHeight;
+                    break;
+
+                } else {
+                    stateMap.put(state, new StateInfo(i, maxHeight));
                 }
-                maxHeight = newMaxHeight;
             }
 
 
@@ -87,17 +86,16 @@ public class Day17_2 {
             */
             int finalmaxHeight = restPoints.stream().mapToInt(p -> p.y()).max().orElse(0);
             System.out.println(finalmaxHeight);
-            System.out.println(finalmaxHeight+n*h2);
 
         } catch(IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static Set<Point> getRock(int i, Set<Point> restPoints) {
+    private static Set<Point> getRock(int rockIndex, Set<Point> restPoints) {
         int maxHeight = restPoints.stream().mapToInt(p -> p.y()).max().orElse(0);
 
-        return switch (i % 5) {
+        return switch (rockIndex) {
             case 0 -> Set.of(
                     new Point(3, maxHeight + 4),
                     new Point(4, maxHeight + 4),
@@ -124,7 +122,7 @@ public class Day17_2 {
                     new Point(3, maxHeight + 5),
                     new Point(4, maxHeight + 4),
                     new Point(4, maxHeight + 5));
-            default -> throw new RuntimeException("Invalid i: " + i);
+            default -> throw new RuntimeException("Invalid i: " + rockIndex);
         };
     }
 
@@ -153,5 +151,23 @@ public class Day17_2 {
             }
         }
         return true;
+    }
+
+    private static State getState(int rockIndex, int jet, Set<Point> restPoints) {
+        Set<Point> blockingPoints = new HashSet<>();
+        int maxHeight = restPoints.stream().mapToInt(p -> p.y()).max().orElse(0);
+        Set<Integer> abscissas = new HashSet<>(Set.of(1,2,3,4,5,6,7));
+        for(int y = maxHeight; y >= 0; y--) {
+            for(int x = 1; x < 8; x++) {
+                if(y == 0 || restPoints.contains(new Point(x,y))) {
+                    abscissas.remove(x);
+                    blockingPoints.add(new Point(x, y-maxHeight));
+                }
+            }
+            if(abscissas.isEmpty()) {
+                break;
+            }
+        }
+        return new State(rockIndex, jet, blockingPoints);
     }
 }
