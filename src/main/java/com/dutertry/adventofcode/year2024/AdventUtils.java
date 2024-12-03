@@ -1,25 +1,37 @@
 package com.dutertry.adventofcode.year2024;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AdventUtils {
+    private static String getResourceName(int day, boolean sample) {
+        String name = "input" + day;
+        if(sample) {
+            name += "-e";
+        }
+        name += ".txt";
+        return name;
+    }
+
+    private static Reader getReader(int day, boolean sample) {
+        return new InputStreamReader(AdventUtils.class.getResourceAsStream(getResourceName(day, sample)),
+                StandardCharsets.UTF_8);
+    }
 
     public static BufferedReader getBufferedReader(int day) {
         return getBufferedReader(day, false);
     }
     
     public static BufferedReader getBufferedReader(int day, boolean sample) {
-        String name = "input" + day;
-        if(sample) {
-            name += "-e";
-        }
-        name += ".txt";
-        return new BufferedReader(new InputStreamReader(AdventUtils.class.getResourceAsStream(name), StandardCharsets.UTF_8));
+        String name = getResourceName(day, sample);
+        return new BufferedReader(getReader(day, sample));
     }
     
     public static List<String> getLines(int day, boolean sample) throws IOException {
@@ -53,7 +65,7 @@ public class AdventUtils {
     }
     
     public static String getString(int day, boolean sample) throws IOException {
-        return getLines(day, sample).get(0);
+        return IOUtils.toString(getReader(day, sample));
     }
     
     public static String getString(int day) throws IOException {
