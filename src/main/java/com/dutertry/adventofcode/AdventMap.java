@@ -1,5 +1,6 @@
 package com.dutertry.adventofcode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -53,5 +54,17 @@ public class AdventMap {
         return IntStream.range(0, xSize)
             .boxed()
             .flatMap(x -> IntStream.range(0, ySize).mapToObj(y -> new Point(x, y)) );
+    }
+
+    public AdventMap rotateRight() {
+        List<String> lines = new ArrayList<>(xSize);
+        for(int x = 0; x < xSize; x++) {
+            StringBuilder sb = new StringBuilder(ySize);
+            for(int y = ySize - 1; y >= 0; y--) {
+                sb.append(getChar(x, y));
+            }
+            lines.add(sb.toString());
+        }
+        return new AdventMap(lines);
     }
 }
