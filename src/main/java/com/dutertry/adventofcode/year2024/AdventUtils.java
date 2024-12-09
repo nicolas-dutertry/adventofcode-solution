@@ -65,7 +65,14 @@ public class AdventUtils {
     }
     
     public static String getString(int day, boolean sample) throws IOException {
-        return IOUtils.toString(getReader(day, sample));
+        String s = IOUtils.toString(getReader(day, sample));
+        if(s.endsWith("\n")) {
+            s = s.substring(0, s.length() - 1);
+        }
+        if(s.endsWith("\r")) {
+            s = s.substring(0, s.length() - 1);
+        }
+        return s;
     }
     
     public static String getString(int day) throws IOException {
