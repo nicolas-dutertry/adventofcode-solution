@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class AdventMap {
+public class InfiniteMap {
     private final List<String> lines;
     private final int xSize;
     private final int ySize;
 
-    public AdventMap(List<String> lines) {
+    public InfiniteMap(List<String> lines) {
         this.lines = lines;
         this.xSize = lines.get(0).length();
         this.ySize = lines.size();
@@ -24,15 +24,10 @@ public class AdventMap {
         return ySize;
     }
 
-    public boolean isPointInMap(Point point) {
-        return point.x() >= 0 && point.x() < xSize && point.y() >= 0 && point.y() < ySize;
-    }
-
     public Character getChar(int x, int y) {
-        if(x < 0 || x >= xSize || y < 0 || y >= ySize) {
-            return null;
-        }
-        return lines.get(y).charAt(x);
+        int xMod = Math.floorMod(x, xSize);
+        int yMod = Math.floorMod(y, ySize);
+        return lines.get(yMod).charAt(xMod);
     }
 
     public Character getChar(Point point) {
@@ -56,7 +51,7 @@ public class AdventMap {
             .flatMap(x -> IntStream.range(0, ySize).mapToObj(y -> new Point(x, y)) );
     }
 
-    public AdventMap rotateRight() {
+    public InfiniteMap rotateRight() {
         List<String> lines = new ArrayList<>(xSize);
         for(int x = 0; x < xSize; x++) {
             StringBuilder sb = new StringBuilder(ySize);
@@ -65,10 +60,10 @@ public class AdventMap {
             }
             lines.add(sb.toString());
         }
-        return new AdventMap(lines);
+        return new InfiniteMap(lines);
     }
 
-    public AdventMap rotateLeft() {
+    public InfiniteMap rotateLeft() {
         List<String> lines = new ArrayList<>(xSize);
         for(int x = xSize - 1; x >= 0; x--) {
             StringBuilder sb = new StringBuilder(ySize);
@@ -77,6 +72,6 @@ public class AdventMap {
             }
             lines.add(sb.toString());
         }
-        return new AdventMap(lines);
+        return new InfiniteMap(lines);
     }
 }
