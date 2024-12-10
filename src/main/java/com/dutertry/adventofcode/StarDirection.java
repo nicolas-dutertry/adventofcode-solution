@@ -1,67 +1,68 @@
 package com.dutertry.adventofcode;
 
-public enum Direction {
-    UP('^', new Point(0,-1)),
-    DOWN('v', new Point(0,1)),
-    LEFT('<', new Point(-1,0)),
-    RIGHT('>', new Point(1,0));
+public enum StarDirection {
+    UP(new Point(0,-1)),
+    DOWN(new Point(0,1)),
+    LEFT( new Point(-1,0)),
+    RIGHT(new Point(1,0)),
+    UP_RIGHT(new Point(1,-1)),
+    UP_LEFT(new Point(-1,-1)),
+    DOWN_RIGHT(new Point(1,1)),
+    DOWN_LEFT(new Point(1,1));
 
-    private final char symbol;
     private final Point vector;
 
-    private Direction(char symbol, Point vector) {
-        this.symbol = symbol;
+    private StarDirection(Point vector) {
         this.vector = vector;
-    }
-
-    public char getSymbol() {
-        return symbol;
     }
 
     public Point getVector() {
         return vector;
     }
 
-    public Direction opposite() {
+    public StarDirection opposite() {
         return switch (this) {
             case UP -> DOWN;
             case DOWN -> UP;
             case LEFT -> RIGHT;
             case RIGHT -> LEFT;
+            case UP_RIGHT -> DOWN_LEFT;
+            case UP_LEFT -> DOWN_RIGHT;
+            case DOWN_RIGHT -> UP_LEFT;
+            case DOWN_LEFT -> UP_RIGHT;
             default -> throw new IllegalStateException("Unexpected value: " + this);
         };
     }
 
-    public Direction turnLeft() {
+    public StarDirection turnLeft() {
         return switch (this) {
             case UP -> LEFT;
             case DOWN -> RIGHT;
             case LEFT -> DOWN;
             case RIGHT -> UP;
+            case UP_RIGHT -> UP_LEFT;
+            case UP_LEFT -> DOWN_LEFT;
+            case DOWN_RIGHT -> UP_RIGHT;
+            case DOWN_LEFT -> DOWN_RIGHT;
             default -> throw new IllegalStateException("Unexpected value: " + this);
         };
     }
 
-    public Direction turnRight() {
+    public StarDirection turnRight() {
         return switch (this) {
             case UP -> RIGHT;
             case DOWN -> LEFT;
             case LEFT -> UP;
             case RIGHT -> DOWN;
+            case UP_RIGHT -> DOWN_RIGHT;
+            case UP_LEFT -> UP_RIGHT;
+            case DOWN_RIGHT -> DOWN_LEFT;
+            case DOWN_LEFT -> UP_LEFT;
             default -> throw new IllegalStateException("Unexpected value: " + this);
         };
     }
 
     public Point move(Point point) {
         return point.add(vector);
-    }
-
-    public static Direction fromSymbol(char symbol) {
-        for(Direction direction : values()) {
-            if(direction.symbol == symbol) {
-                return direction;
-            }
-        }
-        throw new IllegalArgumentException("Unknown symbol: " + symbol);
     }
 }
