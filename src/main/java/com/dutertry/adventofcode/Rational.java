@@ -34,6 +34,10 @@ public class Rational implements Comparable<Rational> {
         return (double) num.doubleValue() / den.doubleValue();
     }
 
+    public boolean isInteger() {
+        return den.compareTo(BigInteger.ONE) == 0;
+    }
+
     // return string representation of (this)
     public String toString() {
         if (den.equals(BigInteger.ONE)) return num + "";

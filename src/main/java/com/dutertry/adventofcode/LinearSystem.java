@@ -2,6 +2,18 @@ package com.dutertry.adventofcode;
 
 import java.math.BigInteger;
 
+/**
+ * Solve n equations with n unknowns using Gaussian elimination.
+ *
+ * Example:
+ * Ax + By = C
+ * Dx + Ey = F
+ *
+ * coefficients = {{A, B}, {D, E}}
+ * constants = {C, F}
+ *
+ * Rational[] solution = LinearSystem.solveSystem(coefficients, constants);
+ */
 public class LinearSystem {
     
     public static Rational[] solveSystem(long[][] coefficients, long[] constants) {
@@ -72,5 +84,17 @@ public class LinearSystem {
         Rational[] temp = matrix[row1];
         matrix[row1] = matrix[row2];
         matrix[row2] = temp;
+    }
+
+    public static void main(String[] args) {
+        long[][] coefficients = {
+            {1, 1},
+            {2, 1}
+        };
+        long[] constants = {1, 3};
+        Rational[] solution = solveSystem(coefficients, constants);
+        for (Rational rational : solution) {
+            System.out.println(rational);
+        }
     }
 }
