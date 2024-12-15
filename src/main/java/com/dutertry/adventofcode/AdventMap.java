@@ -39,6 +39,17 @@ public class AdventMap {
         return getChar(point.x(), point.y());
     }
 
+    public void setChar(Point point, char c) {
+        Character currentChar = getChar(point);
+        if(currentChar == null || currentChar == c) {
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder(lines.get(point.y()));
+        sb.setCharAt(point.x(), c);
+        lines.set(point.y(), sb.toString());
+    }
+
     public Point find(char c) {
         for(int x = 0; x < xSize; x++) {
             for(int y = 0; y < ySize; y++) {
