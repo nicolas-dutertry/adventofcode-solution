@@ -17,7 +17,7 @@ public class Day16_2 {
 
     public static void main(String[] args) {
         try {
-            AdventMap map = new AdventMap(AdventUtils.getLines(16, true));
+            AdventMap map = new AdventMap(AdventUtils.getLines(16));
 
             Point startPoint = map.find('S');
             State startState = new State(startPoint, Direction.RIGHT);
