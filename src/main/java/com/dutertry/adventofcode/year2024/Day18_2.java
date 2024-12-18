@@ -1,16 +1,13 @@
 package com.dutertry.adventofcode.year2024;
 
 import com.dutertry.adventofcode.AdventMap;
-import com.dutertry.adventofcode.Direction;
 import com.dutertry.adventofcode.Point;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 public class Day18_2 {
     private static final int MAX = 70;
@@ -34,7 +31,13 @@ public class Day18_2 {
             }
 
             int bytesCount = 1024;
+            List<Point> lastPath = null;
             while(true) {
+                if(lastPath != null && !lastPath.contains(bytes.get(bytesCount-1))) {
+                    bytesCount++;
+                    continue;
+                }
+
                 AdventMap map = new AdventMap(lines);
 
                 for (int i = 0; i < bytesCount; i++) {
@@ -44,52 +47,17 @@ public class Day18_2 {
 
                 Point startPoint = new Point(0, 0);
                 Point endPoint = new Point(MAX, MAX);
-                Set<Point> visitedPoints = new HashSet<>();
-                Set<Point> possiblePoints = new HashSet<>();
-                possiblePoints.add(startPoint);
-                visitedPoints.add(startPoint);
-                boolean exit = true;
-                main: while (true) {
-                    Set<Point> nextPossiblePoints = new HashSet<>();
-                    for (Point point : possiblePoints) {
-                        Set<Point> points = getPossiblePoints(map, point);
-                        for (Point nextPoint : points) {
-                            if (nextPoint.equals(endPoint)) {
-                                break main;
-                            }
-                            if (!visitedPoints.contains(nextPoint)) {
-                                nextPossiblePoints.add(nextPoint);
-                                visitedPoints.add(nextPoint);
-                            }
-                        }
-                    }
-                    if(nextPossiblePoints.isEmpty()) {
-                        exit = false;
-                        break;
-                    }
-                    possiblePoints = nextPossiblePoints;
-                }
-                if(!exit) {
+
+                lastPath = map.getBestPath(startPoint, endPoint);
+                if(lastPath == null) {
                     Point p = bytes.get(bytesCount-1);
                     System.out.println(p.x() + "," + p.y());
-                    break;
+                    return;
                 }
                 bytesCount++;
             }
         } catch(IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private static Set<Point> getPossiblePoints(AdventMap map, Point point) {
-        Set<Point> possiblePoints = new HashSet<>();
-        for(Direction direction : Direction.values()) {
-            Point nextPoint = direction.move(point);
-            Character nextChar = map.getChar(nextPoint);
-            if(nextChar != null && nextChar != '#') {
-                possiblePoints.add(nextPoint);
-            }
-        }
-        return possiblePoints;
     }
 }

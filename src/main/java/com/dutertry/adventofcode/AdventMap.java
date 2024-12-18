@@ -2,7 +2,10 @@ package com.dutertry.adventofcode;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -100,5 +103,44 @@ public class AdventMap {
         for(String line : lines) {
             out.println(line);
         }
+    }
+
+    public List<Point> getBestPath(Point start, Point end) {
+        Set<Point> visitedPoints = new HashSet<>();
+        List<List<Point>> possiblePaths = new LinkedList<>();
+        possiblePaths.add(List.of(start));
+        visitedPoints.add(start);
+        main: while(!possiblePaths.isEmpty()) {
+            List<List<Point>> nextPossiblePath = new LinkedList<>();
+            for(List<Point> path : possiblePaths) {
+                Point point = path.get(path.size() - 1);
+                Set<Point> points = getFreeNeighbors(point);
+                for(Point nextPoint : points) {
+                    if(!visitedPoints.contains(nextPoint)) {
+                        List<Point> newPath = new ArrayList<>(path);
+                        newPath.add(nextPoint);
+                        if(nextPoint.equals(end)) {
+                            return newPath;
+                        }
+                        nextPossiblePath.add(newPath);
+                        visitedPoints.add(nextPoint);
+                    }
+                }
+            }
+            possiblePaths = nextPossiblePath;
+        }
+        return null;
+    }
+
+    private Set<Point> getFreeNeighbors(Point point) {
+        Set<Point> possiblePoints = new HashSet<>();
+        for(Direction direction : Direction.values()) {
+            Point nextPoint = direction.move(point);
+            Character nextChar = getChar(nextPoint);
+            if(nextChar != null && nextChar != '#') {
+                possiblePoints.add(nextPoint);
+            }
+        }
+        return possiblePoints;
     }
 }
