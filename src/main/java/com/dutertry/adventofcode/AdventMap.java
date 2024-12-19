@@ -20,6 +20,15 @@ public class AdventMap {
         this.ySize = lines.size();
     }
 
+    public AdventMap(int xSize, int ySize, char fillChar) {
+        this.xSize = xSize;
+        this.ySize = ySize;
+        this.lines = new ArrayList<>(ySize);
+        for(int y = 0; y < ySize; y++) {
+            lines.add(String.valueOf(fillChar).repeat(xSize));
+        }
+    }
+
     public int getXSize() {
         return xSize;
     }
