@@ -119,7 +119,7 @@ public class AdventMap {
         List<List<Point>> possiblePaths = new LinkedList<>();
         possiblePaths.add(List.of(start));
         visitedPoints.add(start);
-        main: while(!possiblePaths.isEmpty()) {
+        while(!possiblePaths.isEmpty()) {
             List<List<Point>> nextPossiblePath = new LinkedList<>();
             for(List<Point> path : possiblePaths) {
                 Point point = path.get(path.size() - 1);
@@ -139,6 +139,43 @@ public class AdventMap {
             possiblePaths = nextPossiblePath;
         }
         return null;
+    }
+
+    public int getBestPathLength(Point start, Point end) {
+        Set<Point> visitedPoints = new HashSet<>();
+        Set<Point> possiblePoints = new HashSet<>();
+        possiblePoints.add(start);
+        visitedPoints.add(end);
+        int step = 1;
+        while(true) {
+            step++;
+            Set<Point> nextPossiblePoints = new HashSet<>();
+            for(Point point : possiblePoints) {
+                Set<Point> points = getFreeNeighbors(point);
+                for(Point nextPoint : points) {
+                    if(nextPoint.equals(end)) {
+                        return step;
+                    }
+                    if(!visitedPoints.contains(nextPoint)) {
+                        nextPossiblePoints.add(nextPoint);
+                        visitedPoints.add(nextPoint);
+                    }
+                }
+            }
+            possiblePoints = nextPossiblePoints;
+        }
+    }
+
+    public Set<Point> getNeighbors(Point point) {
+        Set<Point> possiblePoints = new HashSet<>();
+        for(Direction direction : Direction.values()) {
+            Point nextPoint = direction.move(point);
+            Character nextChar = getChar(nextPoint);
+            if(nextChar != null) {
+                possiblePoints.add(nextPoint);
+            }
+        }
+        return possiblePoints;
     }
 
     private Set<Point> getFreeNeighbors(Point point) {
