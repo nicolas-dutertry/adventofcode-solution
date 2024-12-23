@@ -64,4 +64,13 @@ public enum Direction {
         }
         throw new IllegalArgumentException("Unknown symbol: " + symbol);
     }
+
+    public static Direction fromVector(Point vector) {
+        for(Direction direction : values()) {
+            if(direction.vector.equals(vector)) {
+                return direction;
+            }
+        }
+        throw new IllegalArgumentException("Unknown vector: " + vector);
+    }
 }

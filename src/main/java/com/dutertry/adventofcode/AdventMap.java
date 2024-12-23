@@ -178,7 +178,7 @@ public class AdventMap {
         return possiblePoints;
     }
 
-    private Set<Point> getFreeNeighbors(Point point) {
+    public Set<Point> getFreeNeighbors(Point point) {
         Set<Point> possiblePoints = new HashSet<>();
         for(Direction direction : Direction.values()) {
             Point nextPoint = direction.move(point);
@@ -188,5 +188,40 @@ public class AdventMap {
             }
         }
         return possiblePoints;
+    }
+
+    public List<List<Point>> getBestPaths(Point start, Point end) {
+        List<List<Point>> bestPaths = new LinkedList<>();
+
+        List<List<Point>> possiblePaths = new LinkedList<>();
+        possiblePaths.add(List.of(start));
+        int step = 1;
+        boolean found = false;
+        while(!possiblePaths.isEmpty()) {
+            List<List<Point>> nextPossiblePath = new LinkedList<>();
+            for(List<Point> path : possiblePaths) {
+                Point point = path.get(path.size() - 1);
+                Set<Point> points = getFreeNeighbors(point);
+                for(Point nextPoint : points) {
+                    if(!path.contains(nextPoint)) {
+                        List<Point> newPath = new ArrayList<>(path);
+                        newPath.add(nextPoint);
+                        if(nextPoint.equals(end)) {
+                            bestPaths.add(newPath);
+                            found = true;
+                        } else {
+                            nextPossiblePath.add(newPath);
+                        }
+                    }
+                }
+            }
+
+            if(found) {
+                return bestPaths;
+            }
+            step++;
+            possiblePaths = nextPossiblePath;
+        }
+        return bestPaths;
     }
 }
