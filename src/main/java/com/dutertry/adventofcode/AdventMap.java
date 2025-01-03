@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -115,55 +116,11 @@ public class AdventMap {
     }
 
     public List<Point> getBestPath(Point start, Point end) {
-        Set<Point> visitedPoints = new HashSet<>();
-        List<List<Point>> possiblePaths = new LinkedList<>();
-        possiblePaths.add(List.of(start));
-        visitedPoints.add(start);
-        while(!possiblePaths.isEmpty()) {
-            List<List<Point>> nextPossiblePath = new LinkedList<>();
-            for(List<Point> path : possiblePaths) {
-                Point point = path.get(path.size() - 1);
-                Set<Point> points = getFreeNeighbors(point);
-                for(Point nextPoint : points) {
-                    if(!visitedPoints.contains(nextPoint)) {
-                        List<Point> newPath = new ArrayList<>(path);
-                        newPath.add(nextPoint);
-                        if(nextPoint.equals(end)) {
-                            return newPath;
-                        }
-                        nextPossiblePath.add(newPath);
-                        visitedPoints.add(nextPoint);
-                    }
-                }
-            }
-            possiblePaths = nextPossiblePath;
-        }
-        return null;
-    }
-
-    public int getBestPathLength(Point start, Point end) {
-        Set<Point> visitedPoints = new HashSet<>();
-        Set<Point> possiblePoints = new HashSet<>();
-        possiblePoints.add(start);
-        visitedPoints.add(end);
-        int step = 1;
-        while(true) {
-            step++;
-            Set<Point> nextPossiblePoints = new HashSet<>();
-            for(Point point : possiblePoints) {
-                Set<Point> points = getFreeNeighbors(point);
-                for(Point nextPoint : points) {
-                    if(nextPoint.equals(end)) {
-                        return step;
-                    }
-                    if(!visitedPoints.contains(nextPoint)) {
-                        nextPossiblePoints.add(nextPoint);
-                        visitedPoints.add(nextPoint);
-                    }
-                }
-            }
-            possiblePoints = nextPossiblePoints;
-        }
+        PathFinder.WeightedPath<Point> weightedPath = PathFinder.findAnyBestPath(
+                start,
+                end,
+                point -> this.getFreeNeighbors(point).stream().collect(Collectors.toMap(p -> p, p -> 1L)));
+        return weightedPath == null ? null : weightedPath.path();
     }
 
     public Set<Point> getNeighbors(Point point) {
@@ -191,37 +148,11 @@ public class AdventMap {
     }
 
     public List<List<Point>> getBestPaths(Point start, Point end) {
-        List<List<Point>> bestPaths = new LinkedList<>();
-
-        List<List<Point>> possiblePaths = new LinkedList<>();
-        possiblePaths.add(List.of(start));
-        int step = 1;
-        boolean found = false;
-        while(!possiblePaths.isEmpty()) {
-            List<List<Point>> nextPossiblePath = new LinkedList<>();
-            for(List<Point> path : possiblePaths) {
-                Point point = path.get(path.size() - 1);
-                Set<Point> points = getFreeNeighbors(point);
-                for(Point nextPoint : points) {
-                    if(!path.contains(nextPoint)) {
-                        List<Point> newPath = new ArrayList<>(path);
-                        newPath.add(nextPoint);
-                        if(nextPoint.equals(end)) {
-                            bestPaths.add(newPath);
-                            found = true;
-                        } else {
-                            nextPossiblePath.add(newPath);
-                        }
-                    }
-                }
-            }
-
-            if(found) {
-                return bestPaths;
-            }
-            step++;
-            possiblePaths = nextPossiblePath;
-        }
-        return bestPaths;
+        List<PathFinder.WeightedPath<Point>> weightedPaths = PathFinder.findAllBestPaths(
+                start,
+                end,
+                point -> this.getFreeNeighbors(point).stream().collect(Collectors.toMap(p -> p, p -> 1L)));
+        return weightedPaths.stream().map(PathFinder.WeightedPath::path).collect(Collectors.toList());
     }
+
 }
