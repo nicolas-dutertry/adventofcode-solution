@@ -8,7 +8,7 @@ public enum StarDirection {
     UP_RIGHT(new Point(1,-1)),
     UP_LEFT(new Point(-1,-1)),
     DOWN_RIGHT(new Point(1,1)),
-    DOWN_LEFT(new Point(1,1));
+    DOWN_LEFT(new Point(-1,1));
 
     private final Point vector;
 

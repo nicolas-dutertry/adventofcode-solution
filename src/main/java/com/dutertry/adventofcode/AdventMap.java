@@ -3,9 +3,9 @@ package com.dutertry.adventofcode;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -135,12 +135,40 @@ public class AdventMap {
         return possiblePoints;
     }
 
+    public Set<Point> getNeighbors(Point point, BiPredicate<Point, Character> filter) {
+        Set<Point> possiblePoints = new HashSet<>();
+        for(Direction direction : Direction.values()) {
+            Point nextPoint = direction.move(point);
+            Character nextChar = getChar(nextPoint);
+            if(nextChar != null && filter.test(nextPoint, nextChar)) {
+                possiblePoints.add(nextPoint);
+            }
+        }
+        return possiblePoints;
+    }
+
     public Set<Point> getFreeNeighbors(Point point) {
         Set<Point> possiblePoints = new HashSet<>();
         for(Direction direction : Direction.values()) {
             Point nextPoint = direction.move(point);
             Character nextChar = getChar(nextPoint);
             if(nextChar != null && nextChar != '#') {
+                possiblePoints.add(nextPoint);
+            }
+        }
+        return possiblePoints;
+    }
+
+    public Set<Point> getStarNeighbors(Point point) {
+        return getStarNeighbors(point, (p, c) -> true);
+    }
+
+    public Set<Point> getStarNeighbors(Point point, BiPredicate<Point, Character> filter) {
+        Set<Point> possiblePoints = new HashSet<>();
+        for(StarDirection direction : StarDirection.values()) {
+            Point nextPoint = direction.move(point);
+            Character nextChar = getChar(nextPoint);
+            if(nextChar != null && filter.test(nextPoint, nextChar)) {
                 possiblePoints.add(nextPoint);
             }
         }
