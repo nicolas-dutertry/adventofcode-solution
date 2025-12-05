@@ -53,6 +53,10 @@ public record Interval(long min, long max) {
         }
     }
 
+    public boolean contains(long value) {
+        return value >= min() && value <= max();
+    }
+
     public static List<Interval> mergeAll(Collection<Interval> intervals) {
         List<Interval> sortedIntervals = new ArrayList<>(intervals);
         sortedIntervals.sort(Comparator.comparingLong(Interval::min));
