@@ -29,4 +29,8 @@ public class Pair<T> {
     public int hashCode() {
         return Objects.hashCode(values);
     }
+
+    public String toString() {
+        return "Pair{" + values + "}";
+    }
 }
