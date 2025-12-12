@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 
 public class PathFinder {
     public record WeightedPath<State>(List<State> path, long weight) {}
+    public record CacheKey<State>(State start, State end) {}
 
     public static <State> List<WeightedPath<State>> findAllBestPaths(State start, State end, Function<State, Map<State, Long>> nextStates) {
         Predicate<State> isEnd = state -> Objects.equals(state, end);
@@ -114,4 +115,35 @@ public class PathFinder {
         }
         return bestPath;
     }
+
+    public static <State> long countPaths(State start, State end, Function<State, List<State>> nextStatesProvider) {
+        return countPaths(start, end, nextStatesProvider, new HashMap<>());
+    }
+
+    private static <State> long countPaths(State start, State end, Function<State, List<State>> nextStatesProvider,
+                                   Map<CacheKey<State>, Long> cache) {
+        CacheKey<State> cacheKey = new CacheKey<>(start, end);
+        if(cache.containsKey(cacheKey)) {
+            return cache.get(cacheKey);
+        }
+
+        if(start.equals(end)) {
+            return 1L;
+        }
+
+        List<State> nextStates = nextStatesProvider.apply(start);
+        if(nextStates.isEmpty()) {
+            cache.put(cacheKey, 0L);
+            return 0;
+        }
+
+        long result = 0;
+        for(State nextState : nextStates) {
+            long count = countPaths(nextState, end, nextStatesProvider, cache);
+            result += count;
+        }
+        cache.put(cacheKey, result);
+        return result;
+    }
+
 }

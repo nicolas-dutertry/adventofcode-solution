@@ -9,6 +9,10 @@ public class Rational implements Comparable<Rational> {
     private BigInteger num;   // the numerator
     private BigInteger den;   // the denominator
 
+    public Rational(long i) {
+        this(BigInteger.valueOf(i), BigInteger.ONE);
+    }
+
     // create and initialize a new Rational object
     public Rational(BigInteger numerator, BigInteger denominator) {
 
